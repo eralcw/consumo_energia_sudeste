@@ -1,2 +1,5 @@
-# consumo_energia_sudeste
-Projeto de ciência de dados e ML 
+## Dependencias
+
+*Windows*
+
+`pip install -r requirements.txt`

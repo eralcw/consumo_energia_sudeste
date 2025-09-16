@@ -18,10 +18,14 @@ consumo_mediana = consumo.median()
 print(consumo_mediana)
 consumo_moda = consumo.mode()
 print(consumo_moda)
-
+    def hist_consumo:
 fig, ax = plt.subplots(figsize=(6,8))
 
 ax.hist(consumo, bins=12)
 ax.set_xlabel('Consumo MW/h')
 ax.set_ylabel('Frequencia')
 plt.show()
+
+
+if __name__== "__main__":
+    pass

@@ -2,7 +2,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import geobr
+import geopandas as gpd
 from scipy import stats
+
 
 def init_csv():
     try:
@@ -13,8 +16,43 @@ def init_csv():
     except Exception as e:
         print(f'Erro: gerar csv {i}')
         return False
+
+def merge_geobr_region():
+    try:
+        df = pd.read_csv('./data/raw_0.csv')
+        print('Regiões no CSV:', df['Regiao'].unique())
+  
+        df['Regiao'] = df['Regiao'].str.strip().str.lower().str.replace(' ', '-', regex=True)
+
+        consumo_regiao = df.groupby('Regiao')['Consumo'].sum().reset_index()
+
+        region = geobr.read_region()
+        print('Regiões no geobr:', region['name_region'].unique())
+        region["name_region"] = region['name_region'].str.strip().str.lower().str.replace(' ','-', regex=True)
+
     
-def consumo_describe():
+        merged = pd.merge(region, consumo_regiao, left_on='name_region', right_on='Regiao', how='left')
+        print('Regiões padronizadas no CSV:', consumo_regiao['Regiao'].unique())
+        print('Regiões padronizadas no geobr:', region['name_region'].unique())
+        return merged
+    except Exception as e:
+        print(f'Erro ao fazer merge: {e}')
+        return None
+
+def consumo_regiao_sum():
+    merged = merge_geobr_region()
+
+    gdf = gpd.GeoDataFrame(merged, geometry='geometry')
+
+    fig, ax = plt.subplots(figsize=(10,8))
+    gdf.plot(column='Consumo', cmap='OrRd', ax=ax, legend=True)
+    ax.set_title('Consumo de Energia por Região')
+    plt.axis('off')
+    # plt.savefig('./reports/mapa_consumo_regiao.png')
+    plt.show()
+
+
+def overall_describe():
     try:
         df = pd.read_csv('./data/raw_0.csv')
         consumo = df['Consumo']
@@ -25,44 +63,53 @@ def consumo_describe():
             "Median": [mediana],
             "Mode": [moda]
         }
-        describe = consumo.describe()
-        print(pd.DataFrame(show))
-        print(pd.DataFrame(describe))
         
+        print(pd.DataFrame(show))
+        print(consumo.describe())
+
     except Exception as e:
         print(f'Erro na descrição: {e}')
         return False
     
-def numbers_col():
-    df = pd.read_csv('./data/raw_0.csv')
-    numeric_cols =df.select_dtypes(include='number').columns
-    for col in numeric_cols:
-        plt.figure(figsize=(6,1))
-        sns.boxplot(x=df[col])
-        plt.title(f'Boxplot de {col}')
+
+def overall_hist():
+    try: 
+        df = pd.read_csv('./data/raw_0.csv')
+        consumo = df['Consumo']
+        fig, ax = plt.subplots(figsize=(8,6))
+
+        ax.hist(consumo, bins=10, color='skyblue', edgecolor='red')
+        ax.set_xlabel('Consumo MW/h')
+        ax.set_ylabel('Frequência')
+        ticks = ax.get_xticks()
+        labels = [f'{t/1000000:.1f}M' for t in ticks]
+        ax.set_xticks(ticks)
+        ax.set_xticklabels(labels)
+        plt.savefig('./reports/hist_consumo.png')
         plt.show()
-
-#consumo = df_0['Consumo']
-#print(consumo)
-#consumo_media = consumo.mean()
-#print(consumo_media)
-#consumo_mediana = consumo.median()
-#print(consumo_mediana)
-#consumo_moda = consumo.mode()
-#print(consumo_moda)
+    except Exception as e:
+        print(f'Erro ao gerar histograma: {e}')
+        return False
 
 
-
-def hist_consumo():
+def overall_scatt(columns):
+    
     df = pd.read_csv('./data/raw_0.csv')
     consumo = df['Consumo']
-    fig, ax = plt.subplots(figsize=(6,8))
-
-    ax.hist(consumo, bins=12)
-    ax.set_xlabel('Consumo MW/h')
-    ax.set_ylabel('Frequencia')
+    col = df[columns]
+    plt.scatter_mapbox
+    
+    
+    
+    
+    plt.figure(figsize=(6,8))
+    plt.scatter(consumo, col, color='red', alpha=0.3, marker='x')
+    plt.xlabel(columns)
+    plt.ylabel('Consumo')
+    plt.xticks(rotation=90)
     plt.show()
 
+    
 
 if __name__== "__main__":
-    consumo_describe()
+    consumo_regiao_sum()

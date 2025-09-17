@@ -14,8 +14,25 @@ def init_csv():
         print(f'Erro: gerar csv {i}')
         return False
     
-
-
+def consumo_describe():
+    try:
+        df = pd.read_csv('./data/raw_0.csv')
+        consumo = df['Consumo']
+        mediana = consumo.median()
+        moda = consumo.mode()[0]
+        
+        show = {
+            "Median": [mediana],
+            "Mode": [moda]
+        }
+        describe = consumo.describe()
+        print(pd.DataFrame(show))
+        print(pd.DataFrame(describe))
+        
+    except Exception as e:
+        print(f'Erro na descrição: {e}')
+        return False
+    
 def numbers_col():
     df = pd.read_csv('./data/raw_0.csv')
     numeric_cols =df.select_dtypes(include='number').columns
@@ -48,4 +65,4 @@ def hist_consumo():
 
 
 if __name__== "__main__":
-    pass
+    consumo_describe()

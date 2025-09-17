@@ -22,13 +22,20 @@ def merge_geobr_region():
         df = pd.read_csv('./data/raw_0.csv')
         print('Regiões no CSV:', df['Regiao'].unique())
   
-        df['Regiao'] = df['Regiao'].str.strip().str.lower().str.replace(' ', '-', regex=True)
-
-        consumo_regiao = df.groupby('Regiao')['Consumo'].sum().reset_index()
+        df['Regiao'] = ( df['Regiao']
+                        .str.strip()
+                        .str.lower()
+                        .str.replace(' ', '-', regex=True)
+        )
+        consumo_regiao = df.groupby('Regiao')['Consumo'].mean().reset_index()
 
         region = geobr.read_region()
         print('Regiões no geobr:', region['name_region'].unique())
-        region["name_region"] = region['name_region'].str.strip().str.lower().str.replace(' ','-', regex=True)
+        region["name_region"] = ( region['name_region']
+                        .str.strip()
+                        .str.lower()
+                        .str.replace(' ','-', regex=True)
+        )
 
     
         merged = pd.merge(region, consumo_regiao, left_on='name_region', right_on='Regiao', how='left')
@@ -39,18 +46,23 @@ def merge_geobr_region():
         print(f'Erro ao fazer merge: {e}')
         return None
 
-def consumo_regiao_sum():
-    merged = merge_geobr_region()
+def consumo_regiao_mean():
+    try:
+        df = pd.read_csv('./data/raw_0.csv')
+        merged = merge_geobr_region()
 
-    gdf = gpd.GeoDataFrame(merged, geometry='geometry')
+        gdf = gpd.GeoDataFrame(merged, geometry='geometry')
 
-    fig, ax = plt.subplots(figsize=(10,8))
-    gdf.plot(column='Consumo', cmap='OrRd', ax=ax, legend=True)
-    ax.set_title('Consumo de Energia por Região')
-    plt.axis('off')
-    # plt.savefig('./reports/mapa_consumo_regiao.png')
-    plt.show()
-
+        fig, ax = plt.subplots(figsize=(10,8))
+        gdf.plot(column='Consumo', cmap='OrRd',ax=ax, legend=True)
+        ax.set_title('Consumo de Energia por Região')
+       
+        plt.axis('off')
+        plt.savefig('./reports/mapa_consumo_regiao.png')
+        plt.show()
+    except Exception as e:
+        print(f'Erro no merged: {e}')
+        return None
 
 def overall_describe():
     try:
@@ -91,25 +103,31 @@ def overall_hist():
         print(f'Erro ao gerar histograma: {e}')
         return False
 
+def corr_raw_0():
+    df = pd.read_csv('./data/raw_0.csv')
+    plt.figure(figsize=(8,6))
+    numeric_df = df.select_dtypes(include='number')
+    sns.heatmap(numeric_df.corr(), annot=True, cmap='coolwarm')
+    plt.title('Matriz de correlação da tabela Raw_0')
+    plt.show()
+
 
 def overall_scatt(columns):
-    
     df = pd.read_csv('./data/raw_0.csv')
     consumo = df['Consumo']
     col = df[columns]
-    plt.scatter_mapbox
-    
-    
-    
-    
-    plt.figure(figsize=(6,8))
-    plt.scatter(consumo, col, color='red', alpha=0.3, marker='x')
-    plt.xlabel(columns)
-    plt.ylabel('Consumo')
-    plt.xticks(rotation=90)
-    plt.show()
 
+    plt.figure(figsize=(8,6))
+    sns.scatterplot(x=col, y=consumo, color='red', alpha=0.6)
+    plt.xlabel(columns)
+    plt.ylabel('Consumo (MW/h)')
+    plt.title(f'Dispersão: Consumo x {columns}')
+    plt.yscale('log')
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.savefig('./reports/scatt_consumo.png')
+    plt.show()
     
 
 if __name__== "__main__":
-    consumo_regiao_sum()
+    overall_scatt('Consumidores')

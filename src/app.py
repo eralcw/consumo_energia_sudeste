@@ -17,7 +17,7 @@ def init_csv():
         print(f'Erro: gerar csv {i}')
         return False
 
-def merge_geobr_region():
+def merge_consumo_region():
     try:
         df = pd.read_csv('./data/raw_0.csv')
         print('Regiões no CSV:', df['Regiao'].unique())
@@ -44,7 +44,7 @@ def merge_geobr_region():
         return merged
     except Exception as e:
         print(f'Erro ao fazer merge: {e}')
-        return None
+        return False
 
 def consumo_regiao_mean():
     try:
@@ -62,7 +62,7 @@ def consumo_regiao_mean():
         plt.show()
     except Exception as e:
         print(f'Erro no merged: {e}')
-        return None
+        return False
 
 def overall_describe():
     try:
@@ -113,21 +113,24 @@ def corr_raw_0():
 
 
 def overall_scatt(columns):
-    df = pd.read_csv('./data/raw_0.csv')
-    consumo = df['Consumo']
-    col = df[columns]
+    try:
+        df = pd.read_csv('./data/raw_0.csv')
+        consumo = df['Consumo']
+        col = df[columns]
 
-    plt.figure(figsize=(8,6))
-    sns.scatterplot(x=col, y=consumo, color='red', alpha=0.6)
-    plt.xlabel(columns)
-    plt.ylabel('Consumo (MW/h)')
-    plt.title(f'Dispersão: Consumo x {columns}')
-    plt.yscale('log')
-    plt.grid(True, linestyle='--', alpha=0.5)
-    plt.tight_layout()
-    plt.savefig('./reports/scatt_consumo.png')
-    plt.show()
-    
+        plt.figure(figsize=(8,6))
+        sns.scatterplot(x=col, y=consumo, color='red', alpha=0.6)
+        plt.xlabel(columns)
+        plt.ylabel('Consumo (MW/h)')
+        plt.title(f'Dispersão: Consumo x {columns}')
+        plt.yscale('log')
+        plt.grid(True, linestyle='--', alpha=0.5)
+        plt.tight_layout()
+        plt.savefig('./reports/scatt_consumo.png')
+        plt.show()
+    except Exception as e:
+        print(f'Erro ao gerar scatter: {e}')
+        return False
 
 if __name__== "__main__":
     overall_scatt('Consumidores')

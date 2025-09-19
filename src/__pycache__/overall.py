@@ -5,19 +5,27 @@ def overall_describe():
     try:
         df = pd.read_csv('./data/raw_0.csv')
         consumo = df['Consumo']
+
         mediana = consumo.median()
         moda = consumo.mode()[0]
+        media = consumo.mean()
+        max = consumo.max()
+        min = consumo.min()
+
         
         show = {
-            "Median": [mediana],
-            "Mode": [moda]
+            "Mediana": [mediana],
+            "Moda": [moda],
+            "Media": [media],
+            "Maximo": [max],
+            "Minimo": [min]
+
         }
         
         print(pd.DataFrame(show))
-        print(consumo.describe())
         path = './data/processed/overall_average.csv'
         if not os.path.exists(path):
-            pd.DataFrame(show).to_csv(path, index=False) and consumo.describe().to_csv(path, index=False)
+            pd.DataFrame(show).to_csv(path, index=False)
     except Exception as e:
         print(f'Erro na descrição: {e}')
         return False

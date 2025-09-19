@@ -1,6 +1,11 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+
+
 def overall_scatt(columns):
     try:
-        df = pd.read_csv('./data/raw_0.csv')
+        df = pd.read_csv('./data/raw/raw_0.csv')
         consumo = df['Consumo']
         col = df[columns]
 
@@ -17,3 +22,4 @@ def overall_scatt(columns):
     except Exception as e:
         print(f'Erro ao gerar scatter: {e}')
         return False
+overall_scatt('Consumidores')

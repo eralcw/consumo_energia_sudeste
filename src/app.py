@@ -64,25 +64,7 @@ def consumo_regiao_mean():
         print(f'Erro no merged: {e}')
         return False
 
-def overall_describe():
-    try:
-        df = pd.read_csv('./data/raw_0.csv')
-        consumo = df['Consumo']
-        mediana = consumo.median()
-        moda = consumo.mode()[0]
-        
-        show = {
-            "Median": [mediana],
-            "Mode": [moda]
-        }
-        
-        print(pd.DataFrame(show))
-        print(consumo.describe())
 
-    except Exception as e:
-        print(f'Erro na descrição: {e}')
-        return False
-    
 
 def overall_hist():
     try: 

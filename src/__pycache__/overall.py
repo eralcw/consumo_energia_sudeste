@@ -3,7 +3,7 @@ import pandas as pd
 
 def overall_describe():
     try:
-        df = pd.read_csv('./data/raw_0.csv')
+        df = pd.read_csv('./data/raw/raw_0.csv')
         consumo = df['Consumo']
 
         mediana = consumo.median()
@@ -33,7 +33,7 @@ def overall_describe():
 
 def overall_group_average(coluna):
     try:
-        df = pd.read_csv("./data/raw_0.csv")
+        df = pd.read_csv("./data/raw/raw_0.csv")
         show = (
             df.groupby(coluna)["Consumo"].agg(
                 Quantidade="count",

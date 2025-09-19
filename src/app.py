@@ -49,7 +49,7 @@ def merge_consumo_region():
 def consumo_regiao_mean():
     try:
         df = pd.read_csv('./data/raw_0.csv')
-        merged = merge_geobr_region()
+        merged = merge_consumo_region()
 
         gdf = gpd.GeoDataFrame(merged, geometry='geometry')
 

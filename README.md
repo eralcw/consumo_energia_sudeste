@@ -25,6 +25,7 @@ data/raw.xlsx      # Planilha de entrada
 
 ## Dependencias
 
+
 *Windows*
 
 `pip install -r requirements.txt`

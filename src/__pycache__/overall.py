@@ -29,4 +29,30 @@ def overall_describe():
     except Exception as e:
         print(f'Erro na descrição: {e}')
         return False
-overall_describe()
+
+
+def overall_group_average(coluna):
+    try:
+        df = pd.read_csv("./data/raw_0.csv")
+        show = (
+            df.groupby(coluna)["Consumo"].agg(
+                Quantidade="count",
+                Media="mean",
+                Mediana="median",
+                Moda=lambda x: x.mode()[0] if not x.mode().empty else None,
+                Maior_Consumo="max",
+                Menor_Consumo="min",
+            )
+            .reset_index()
+        )
+        print(show)
+        path = f"./data/processed/overall_{coluna.lower()}_average.csv"
+        if not os.path.exists(path):
+            show.to_csv(path, index=False)
+    except Exception as e:
+        print(f"Erro ao calcular estatísticas por {coluna}: {e}")
+        return False
+
+
+if __name__=='__main__':
+    overall_group_average('Sistema')

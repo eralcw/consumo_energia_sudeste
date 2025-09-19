@@ -21,3 +21,4 @@ def overall_describe():
     except Exception as e:
         print(f'Erro na descrição: {e}')
         return False
+overall_describe()

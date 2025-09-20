@@ -22,4 +22,3 @@ def overall_scatt(columns):
     except Exception as e:
         print(f'Erro ao gerar scatter: {e}')
         return False
-overall_scatt('Consumidores')
